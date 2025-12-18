@@ -198,14 +198,22 @@ do
                             
                         if hrp and selectedMob then
                             for _,mob in pairs(Npc:GetDescendants()) do
-                                if mob.name == selectedMob and mob:IsA("model") then
+                                if mob.Name == selectedMob and mob:IsA("Model") then
                                     local mobHrp = mob:FindFirstChild("HumanoidRootPart")
+                                    local mobHumanoid = mob:FindFirstChild("Humanoid")
                                     
-                                    if mobHrp then
+                                    if mobHrp and mobHumanoid.health >= 0 then
                                         hrp.CFrame = mobHrp.CFrame * CFrame.new(0,10,0)
-                                        end
+                                        break
+                                    else
+                                        print(mobHrp,mobHumanoid.health)
                                     end
+                                else
+                                    print(mob.Name)
                                 end
+                            end
+                        else
+                            print(hrp)
                         end
                     end)
                 end
