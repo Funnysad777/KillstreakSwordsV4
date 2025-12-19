@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.0 - beta]",
+    Title = "Null Hub | STLD | [Version 1.0.0]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -44,6 +44,7 @@ Button.MouseButton1Click:Connect(ToggleWindow)
 -- ==================== TABS ====================
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Teleport = Window:AddTab({ Title = "Teleport", Icon = ""}),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
@@ -119,6 +120,13 @@ do
         Default = 1,
     })
 
+    local Dropdown_Tp = Tabs.Teleport:AddDropdown("DropdownTp", {
+        Title = "Teleport",
+        Values = {"null"},
+        Multi = false,
+        Default = 1,
+    })
+
     Tabs.Main:AddButton({
         Title = "Reset mob dropdown",
         Description = "",
@@ -130,11 +138,23 @@ do
         end
     })
     
-    -- Toggle สำหรับเทเลพอร์ตไปหาดาบ
+    --========================= Toggle =========================
+    
     local TpS = Tabs.Main:AddToggle("TpCSword", {
         Title = "TP Choose Sword",
         Default = false
     })
+
+    local mobFarm = Tabs.Main:AddToggle("FarmMob", {
+        Title = "Auto Farm",
+        Default = false
+    })
+
+    local Tp = Tabs.Teleport:AddToggle("TP", {
+        Title = "Teleport",
+        Default = false
+    })
+
     
     -- ==================== TOGGLE LOGIC ====================
     TpS:OnChanged(function()
@@ -183,11 +203,6 @@ do
         end
     end)
     
-    local mobFarm = Tabs.Main:AddToggle("FarmMob", {
-        Title = "Auto Farm",
-        Default = false
-    })
-
     mobFarm:OnChanged(function()
     if mobFarm.Value then
         task.spawn(function()
@@ -226,8 +241,21 @@ do
     end
 end)
 
+    Tp:OnChanged(function()
+        if Tp.Value then
+            local success, err = pcall(function()
+                        local hrp, humanoid = getCharacterParts()
+                    
+                if Dropdown_Tp.Value == "null" then
+                    hrp.CFrame = CFrame.new(5910.52, 4233.31, -2945.27)
+                end
+            end)
+        end
+    end)
+
     
     -- ตั้งค่าเริ่มต้น
     Options.TpCSword:SetValue(false)
     Options.FarmMob:SetValue(false)
+    Option.TP:SetValue(false)
 end
