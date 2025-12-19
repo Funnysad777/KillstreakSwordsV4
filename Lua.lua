@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.0 - beta]",
+    Title = "Null Hub | STLD | [Version 1.0.0]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -195,10 +195,12 @@ do
                 local success, err = pcall(function()
                         local hrp, humanoid = getCharacterParts()
                     
+                    local selectedMob = Dropdown_mob.Value
+                    
                     for _,mob_foldeR in pairs(Npc:GetChildren()) do
                         if mob_foldeR:IsA("Folder") then
                               for _,mob_modeL in pairs(mob_foldeR:GetDescendants()) do
-                                if mob_modeL:IsA("Model") then
+                                if mob_modeL:IsA("Model") and mob_modeL.Name == selectedMob then
                                     for _, MobHrp in pairs(mob_modeL:GetChildren()) do
                 if MobHrp:IsA("BasePart") and MobHrp.Name == "HumanoidRootPart" then
                     -- หา Humanoid ใน mob_modeL
@@ -218,7 +220,6 @@ do
                             end
                         end
                     end
-                    
                 end)
             end
         end)
