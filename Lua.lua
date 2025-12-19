@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | STLD | [Version 1.0.0]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.1]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -44,7 +44,7 @@ Button.MouseButton1Click:Connect(ToggleWindow)
 -- ==================== TABS ====================
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Teleport = Window:AddTab({ Title = "Teleport", Icon = ""}),
+    Teleport = Window:AddTab({ Title = "Teleport", Icon = "arrow-left-right"}),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
