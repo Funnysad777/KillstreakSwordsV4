@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.1]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.2]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -223,7 +223,7 @@ do
                     
                     if MobHumanoid and MobHumanoid:IsA("Humanoid") and MobHumanoid.health > 0 then
                                                     
-                                            hrp.CFrame = MobHrp.CFrame * CFrame.new(0,20,0)
+                                            hrp.CFrame = MobHrp.CFrame * CFrame.new(0,15,0)
                     end
                         MobHrp.Size = Vector3.new(20,20,20)
                         MobHrp.Transparency = 0.5
