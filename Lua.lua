@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.2]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.3 - beta]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -89,19 +89,33 @@ do
     -- ==================== mob table loop ====================
     local mob_Folder = {}
     local mob_Model = {}
-    
+
     function mobReset()
-          for _,mob_folder in pairs(Npc:GetChildren()) do
+        -- ล้างตารางก่อนเพิ่มข้อมูลใหม่
+        table.clear(mob_Folder)
+        table.clear(mob_Model)
+        
+        local uniqueNames = {}
+        
+        for _, mob_folder in pairs(Npc:GetChildren()) do
             if mob_folder:IsA("Folder") then
-                  table.insert(mob_Folder, mob_Folder.Name)
-                  for _,mob_model in pairs(mob_folder:GetDescendants()) do
+                table.insert(mob_Folder, mob_folder.Name)
+                
+                for _, mob_model in pairs(mob_folder:GetDescendants()) do
                     if mob_model:IsA("Model") then
-                       table.insert(mob_Model, mob_model.Name)
+                        -- เช็คว่าชื่อซ้ำหรือไม่
+                        if not uniqueNames[mob_model.Name] then
+                            uniqueNames[mob_model.Name] = true
+                            table.insert(mob_Model, mob_model.Name)
+                        end
                     end
                 end
             end
         end
     end
+    
+    -- เรียกครั้งแรกเพื่อโหลดข้อมูล
+    mobReset()
     
     -- ==================== UI ELEMENTS ====================
     
@@ -127,6 +141,36 @@ do
         Default = 1,
     })
 
+    local changeY = Tabs.Main:AddSlider("SliderY", {
+        Title = "height",
+        Description = Value,
+        Default = 20,
+        Min = 10,
+        Max = 30,
+        Rounding = 1,
+        Callback = function(Value)
+            print(Value)
+        end
+    })
+
+    
+    local InputHeight = Tabs.Main:AddInput("InputH", {
+        Title = "Height(input)",
+        Default = 20,
+        Placeholder = "Placeholder",
+        Numeric = true, -- Only allows numbers
+        Finished = false, -- Only calls callback when you press enter
+        Callback = function(Value)
+            
+        end
+    })
+
+    InputHeight:OnChanged(function()
+        if InputHeight.Value then
+            changeY.Value = InputHeight.Value
+        end
+    end)
+        
     Tabs.Main:AddButton({
         Title = "Reset mob dropdown",
         Description = "",
@@ -134,7 +178,6 @@ do
             mobReset()
             task.wait(0.2)
             Dropdown_mob:SetValue(mob_Model)
-            table.clear(mob_Model)
         end
     })
     
@@ -161,12 +204,11 @@ do
         if TpS.Value then
             task.spawn(function()
                 while TpS.Value do
-                    task.wait(0.1) -- ป้องกันไม่ให้ loop เร็วเกินไป
+                    task.wait(0)
                     
                     local success, err = pcall(function()
                         local hrp, humanoid = getCharacterParts()
-                        
-                        -- ตรวจสอบว่า Health มากพอ
+    
                         if humanoid.Health >= 999e999 then
                             local selectedSwordName = Dropdown_SSword.Value
                             
@@ -174,10 +216,10 @@ do
                                 local targetModel = sword_stand:FindFirstChild(selectedSwordName)
                                 
                                 if targetModel and targetModel:IsA("Model") then
-                                    -- เทเลพอร์ตไปยังตำแหน่งดาบ
+                    
                                     hrp:PivotTo(targetModel:GetPivot())
                                     
-                                    -- จัดการกับ ProximityPrompt
+                                
                                     local giver = targetModel:FindFirstChild("Giver")
                                     if giver then
                                         local prompt = giver:FindFirstChild("ProximityPrompt")
@@ -212,6 +254,8 @@ do
                     
                     local selectedMob = Dropdown_mob.Value
                     
+                    local Y = changeY.Value
+                    
                     for _,mob_foldeR in pairs(Npc:GetChildren()) do
                         if mob_foldeR:IsA("Folder") then
                               for _,mob_modeL in pairs(mob_foldeR:GetDescendants()) do
@@ -223,12 +267,15 @@ do
                     
                     if MobHumanoid and MobHumanoid:IsA("Humanoid") and MobHumanoid.health > 0 then
                                                     
-                                            hrp.CFrame = MobHrp.CFrame * CFrame.new(0,15,0)
-                    end
+                                            hrp.CFrame = MobHrp.CFrame * CFrame.new(0,Y,0)
+                    
+                    MobHrp.CanCollide = false
+                    
                         MobHrp.Size = Vector3.new(20,20,20)
                         MobHrp.Transparency = 0.5
                         
                         LocalPlayer.Character:FindFirstChildOfClass("Tool"):Activate()
+                        end
                                  end
                                     end
                                 end
@@ -245,8 +292,8 @@ end)
         if Tp.Value then
             local success, err = pcall(function()
                         local hrp, humanoid = getCharacterParts()
-                    
-                if Dropdown_Tp.Value == "null" then
+                        
+                    if Dropdown_Tp.Value == "null" then
                     hrp.CFrame = CFrame.new(5910.52, 4233.31, -2945.27)
                 end
             end)
@@ -257,5 +304,5 @@ end)
     -- ตั้งค่าเริ่มต้น
     Options.TpCSword:SetValue(false)
     Options.FarmMob:SetValue(false)
-    Option.TP:SetValue(false)
+    Options.TP:SetValue(false)
 end
