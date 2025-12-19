@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | STLD | [Version 1.0.0]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.0 - beta]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -86,18 +86,21 @@ do
     end
     
     -- ==================== mob table loop ====================
-    local mob_model = {}
+    local mob_Folder = {}
+    local mob_Model = {}
     
-    task.spawn(function()
-        while true do task.wait(0.5)
-            table.clear(mob_model)
-            for i,v in pairs(Npc:GetDescendants()) do
-                if v:IsA("Model") then
-                   table.insert(mob_model, v.Name)
+    function mobReset()
+          for _,mob_folder in pairs(Npc:GetChildren()) do
+            if mob_folder:IsA("Folder") then
+                  table.insert(mob_Folder, mob_Folder.Name)
+                  for _,mob_model in pairs(mob_folder:GetDescendants()) do
+                    if mob_model:IsA("Model") then
+                       table.insert(mob_Model, mob_model.Name)
+                    end
                 end
             end
         end
-    end)
+    end
     
     -- ==================== UI ELEMENTS ====================
     
@@ -111,8 +114,8 @@ do
 
     local Dropdown_mob = Tabs.Main:AddDropdown("DropdownMob", {
         Title = "Choose mob",
-        Values = mob_model,
-        Multi = true,
+        Values = mob_Model,
+        Multi = false,
         Default = 1,
     })
 
@@ -120,7 +123,10 @@ do
         Title = "Reset mob dropdown",
         Description = "",
         Callback = function()
-            Dropdown_mob:SetValue(mob_model)
+            mobReset()
+            task.wait(0.2)
+            Dropdown_mob:SetValue(mob_Model)
+            table.clear(mob_Model)
         end
     })
     
@@ -182,49 +188,45 @@ do
         Default = false
     })
 
-    local mobHixboxExpand = Tabs.Main:AddToggle("Hitbox", {
-        Title = "Hitbox Expanded",
-        Default = false
-    })
-
     mobFarm:OnChanged(function()
-        if mobFarm.Value then
-            task.spawn(function()
-                while mobFarm.Value do task.wait()
-                    local success, err = pcall(function()
+    if mobFarm.Value then
+        task.spawn(function()
+            while mobFarm.Value do task.wait()
+                local success, err = pcall(function()
                         local hrp, humanoid = getCharacterParts()
+                    
+                    for _,mob_foldeR in pairs(Npc:GetChildren()) do
+                        if mob_foldeR:IsA("Folder") then
+                              for _,mob_modeL in pairs(mob_foldeR:GetDescendants()) do
+                                if mob_modeL:IsA("Model") then
+                                    for _, MobHrp in pairs(mob_modeL:GetChildren()) do
+                if MobHrp:IsA("BasePart") and MobHrp.Name == "HumanoidRootPart" then
+                    -- หา Humanoid ใน mob_modeL
+                    local MobHumanoid = mob_modeL:FindFirstChild("Humanoid")
+                    
+                    if MobHumanoid and MobHumanoid:IsA("Humanoid") and MobHumanoid.health > 0 then
+                                                    
+                                            hrp.CFrame = MobHrp.CFrame * CFrame.new(0,20,0)
+                    end
+                        MobHrp.Size = Vector3.new(20,20,20)
+                        MobHrp.Transparency = 0.5
                         
-                        local selectedMob = Dropdown_mob.Value
-                            
-                        if hrp and selectedMob then
-                            for _,mob in pairs(Npc:GetDescendants()) do
-                                if mob.Name == selectedMob and mob:IsA("Model") then
-                                    local mobHrp = mob:FindFirstChild("HumanoidRootPart")
-                                    local mobHumanoid = mob:FindFirstChild("Humanoid")
-                                    
-                                    if mobHrp and mobHumanoid.health >= 0 then
-                                        hrp.CFrame = mobHrp.CFrame * CFrame.new(0,10,0)
-                                        break
-                                    else
-                                        print(mobHrp,mobHumanoid.health)
+                        LocalPlayer.Character:FindFirstChildOfClass("Tool"):Activate()
+                                 end
                                     end
-                                else
-                                    print(mob.Name)
                                 end
                             end
-                        else
-                            print(hrp)
                         end
-                    end)
-                end
-            end)
-        end
-    end)
+                    end
+                    
+                end)
+            end
+        end)
+    end
+end)
 
-    
     
     -- ตั้งค่าเริ่มต้น
     Options.TpCSword:SetValue(false)
     Options.FarmMob:SetValue(false)
-    Options.mobHixboxExpand:SetValue(false)
 end
