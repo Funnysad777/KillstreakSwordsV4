@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | STLD | [Version 1.0.0]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.0 - beta]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
