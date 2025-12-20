@@ -4,7 +4,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 -- ==================== WINDOW SETUP ====================
 local Window = Fluent:CreateWindow({
-    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.3 - beta]",
+    Title = "Null Hub | KillstreakSwordsV4 | [Version 1.0.31 - beta]",
     SubTitle = "by Funnysad",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -45,6 +45,7 @@ Button.MouseButton1Click:Connect(ToggleWindow)
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "arrow-left-right"}),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "airplay"}),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
 }
 
@@ -117,6 +118,36 @@ do
     -- เรียกครั้งแรกเพื่อโหลดข้อมูล
     mobReset()
     
+    function AbilityCooldown()
+        for _,tool in pairs(LocalPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") then
+                for _,cooldown in pairs(tool:GetDescendants()) do
+                    if cooldown.Name == "Cooldown" or cooldown:IsA("NumberValue") then
+                        cooldown.Value = 0
+                        print("reset cooldown for", tool.Name)
+                        
+                    end
+                end
+            else
+                print("tool not found")
+            end
+        end
+    end
+    
+    function SwordCooldown()
+        for _,Sword in pairs(LocalPlayer.Backpack:GetChildren()) do
+            if Sword:IsA("Tool") then
+                for _,speed in pairs(Sword:GetDescendants()) do
+                    if speed.Name == "speed" or speed:IsA("NumberValue") then
+                       speed.Value = 0
+                       print("set speed 0 for", Sword)
+                    end
+                end
+            else
+                print("tool not found got:", Sword)
+            end
+        end
+    end
     -- ==================== UI ELEMENTS ====================
     
     -- Dropdown สำหรับเลือกดาบ
@@ -198,17 +229,28 @@ do
         Default = false
     })
 
+    local SkillCooldown = Tabs.Misc:AddToggle("Scooldown", {
+        Title = "No Ability cooldown",
+        Default = false
+    })
+    
+    local Swordcooldown = Tabs.Misc:AddToggle("SwordCooldown", {
+        Title = "No Sword cooldown",
+        Default = false
+    })
+    
     
     -- ==================== TOGGLE LOGIC ====================
     TpS:OnChanged(function()
         if TpS.Value then
             task.spawn(function()
                 while TpS.Value do
-                    task.wait(0)
+                    task.wait(0.1) -- ป้องกันไม่ให้ loop เร็วเกินไป
                     
                     local success, err = pcall(function()
                         local hrp, humanoid = getCharacterParts()
-    
+                        
+                        -- ตรวจสอบว่า Health มากพอ
                         if humanoid.Health >= 999e999 then
                             local selectedSwordName = Dropdown_SSword.Value
                             
@@ -216,10 +258,10 @@ do
                                 local targetModel = sword_stand:FindFirstChild(selectedSwordName)
                                 
                                 if targetModel and targetModel:IsA("Model") then
-                    
+                                    -- เทเลพอร์ตไปยังตำแหน่งดาบ
                                     hrp:PivotTo(targetModel:GetPivot())
                                     
-                                
+                                    -- จัดการกับ ProximityPrompt
                                     local giver = targetModel:FindFirstChild("Giver")
                                     if giver then
                                         local prompt = giver:FindFirstChild("ProximityPrompt")
@@ -265,7 +307,7 @@ do
                     -- หา Humanoid ใน mob_modeL
                     local MobHumanoid = mob_modeL:FindFirstChild("Humanoid")
                     
-                    if MobHumanoid and MobHumanoid:IsA("Humanoid") and MobHumanoid.health > 0 then
+                    if MobHumanoid and MobHumanoid:IsA("Humanoid") and MobHumanoid.health > 0 and humanoid.health < 999e999 then
                                                     
                                             hrp.CFrame = MobHrp.CFrame * CFrame.new(0,Y,0)
                     
@@ -299,10 +341,28 @@ end)
             end)
         end
     end)
+    
+    SkillCooldown:OnChanged(function()
+        if SkillCooldown.Value then
+            while SkillCooldown.Value do task.wait()
+                AbilityCooldown()
+            end
+        end
+    end)
+    
+    Swordcooldown:OnChanged(function()
+        if Swordcooldown.Value then
+            while Swordcooldown.Value do task.wait()
+                SwordCooldown()
+            end
+        end
+    end)
 
     
     -- ตั้งค่าเริ่มต้น
     Options.TpCSword:SetValue(false)
     Options.FarmMob:SetValue(false)
     Options.TP:SetValue(false)
+    Options.Scooldown:SetValue(false)
+    Options.SwordCooldown:SetValue(false)
 end
